@@ -1,10 +1,9 @@
-from flask import (Blueprint, render_template, current_app, abort, g, url_for,
-    request, session, send_file)
+from flask import (Blueprint, Response, render_template, current_app, abort, g,
+    url_for, request, session)
 from galatea.tryton import tryton
 from galatea.utils import slugify
 from galatea.helpers import customer_required
 from flask_babel import gettext as _, lazy_gettext
-import tempfile
 from flask_login import login_required
 
 production = Blueprint('production', __name__, template_folder='templates')
@@ -62,12 +61,4 @@ def production_print(lang, id):
     report_name = 'production-%s.pdf' % (slugify(production.reference) or
         'production')
 
-    with tempfile.NamedTemporaryFile(
-            prefix='%s-' % current_app.config['TRYTON_DATABASE'],
-            suffix='.pdf', delete=False) as temp:
-        temp.write(report)
-    temp.close()
-    data = open(temp.name, 'rb')
-
-    return send_file(data, attachment_filename=report_name, as_attachment=True)
-
+    return Response(report, mimetype="application/pdf")
