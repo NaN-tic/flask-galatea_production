@@ -1,7 +1,6 @@
 from flask import (Blueprint, Response, render_template, current_app, abort, g,
-    url_for, request, session)
+    url_for, session)
 from galatea.tryton import tryton
-from galatea.utils import slugify
 from galatea.helpers import customer_required
 from flask_babel import gettext as _, lazy_gettext
 from flask_login import login_required
@@ -58,7 +57,4 @@ def production_print(lang, id):
         abort(404)
     production, = productions
     _, report, _, _ = ProductionReport.execute([production.id], {})
-    report_name = 'production-%s.pdf' % (slugify(production.reference) or
-        'production')
-
     return Response(report, mimetype="application/pdf")
